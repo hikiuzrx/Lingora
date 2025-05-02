@@ -1,15 +1,18 @@
-// auth/jwt.guard.ts
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+  Logger,
+} from '@nestjs/common';
 import { JwtAuthService } from './jwt.service';
-import { Request } from 'express';
+import { Request, Response as ExpressResponse } from 'express';
 import { User } from 'src/users/schemas/user.schema';
 import { UserService } from 'src/users/users.service';
 
-// Extend Express Request to include user and cookies
 declare module 'express' {
-  interface Request {
+  export interface Request {
     user?: User;
-    cookies?: Record<string, any>;
   }
 }
 
@@ -24,6 +27,8 @@ export class JwtGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
+    const response: ExpressResponse = context.switchToHttp().getResponse();
+
     const accessToken = this.extractAccessToken(request);
     const refreshToken = this.extractRefreshToken(request);
     let payload: any;
@@ -33,6 +38,19 @@ export class JwtGuard implements CanActivate {
         payload = this.jwtAuthService.verifyToken(accessToken, true);
       } else if (refreshToken) {
         payload = this.jwtAuthService.verifyToken(refreshToken, false);
+
+        // Refresh tokens if refresh token is valid
+        const newAccessToken = this.jwtAuthService.generateAccessToken(payload);
+        const newRefreshToken = this.jwtAuthService.generateRefreshToken(payload);
+
+        // Set cookies or Authorization headers as per your approach
+        response.cookie('refreshToken', newRefreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'strict',
+        });
+
+        response.setHeader('Authorization', `Bearer ${newAccessToken}`);
       } else {
         throw new UnauthorizedException('No authentication token provided');
       }

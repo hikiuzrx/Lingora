@@ -3,10 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { ModuleModule } from './lessons/module/module.module';
+
 import { ModuleModule } from './module/module.module';
-import { LessonsService } from './lessons/lessons.service';
-import { LessonsController } from './lessons/lessons.controller';
+import { LessonService } from './lessons/lessons.service';
+import { LessonController } from './lessons/lessons.controller';
+import { LessonModule } from './lessons/lessons.module';
+import { LanguagesModule } from './languages/languages.module';
 
 @Module({
   imports: [
@@ -20,9 +22,8 @@ import { LessonsController } from './lessons/lessons.controller';
     }),
     UsersModule,
     AuthModule,
-    ModuleModule,
+    LessonModule,
+    LanguagesModule,
   ],
-  providers: [LessonsService],
-  controllers: [LessonsController],
 })
 export class AppModule {}
