@@ -1,0 +1,21 @@
+services:
+  lingora-backend:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: 
+      - .env
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - lingora-network
+
+networks:
+  lingora-network:
+    driver: bridge
