@@ -9,6 +9,7 @@ import { LessonService } from './lessons/lessons.service';
 import { LessonController } from './lessons/lessons.controller';
 import { LessonModule } from './lessons/lessons.module';
 import { LanguagesModule } from './languages/languages.module';
+import { ChallengeModule } from './challenge/challenge.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LanguagesModule } from './languages/languages.module';
     AuthModule,
     LessonModule,
     LanguagesModule,
+    ChallengeModule,
   ],
 })
 export class AppModule {}
